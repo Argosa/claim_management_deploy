@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>Claim Entry</title>
+</head>
+<body>
+    <div class='container bg-light'>
+        <div class='bg-dark text-white'>
+            <h1 class='col'>Welcome {{ current_user.first_name }} {{ current_user.last_name }}</h1>
+            <div class="dropdown col">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Main Menu
+                </a>
+              
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="/patient/">Patient Registration</a>
+                  <a class="dropdown-item" href="/claim_dashboard/">Claims Dashboard</a>
+                  <a class="dropdown-item" href="/logout/">Logout</a>
+                </div>
+              </div>
+        </div>
+        <form class='row' action='/process_claim' method='POST'>
+            {% csrf_token %}
+            <div class='col form-group'>
+                <label>Patient: {{ current_patient.first_name }} {{ current_patient.last_name }}</label><br>
+                <label for='claim_number'>Claim Number:</label>
+                <input class='form-control' type='text' id='claim_number' name='claim_number' required>
+                <label for='date_of_service'>Date of Service</label>
+                <input class='form-control' type='date' id='date_of_service' name='date_of_service' required>
+                <button class='btn btn-primary mt-4' type='submit'>Save claim</button>
+            </div>
+            <div class='col form-group'>
+                <label for="insurance">Insurance:</label>
+                <select class='form-control mt-4' id='insurance' name='insurance'>
+                    {% for insurance in all_insurance %}
+                    <option value='{{ insurance.id }}'>{{ insurance.insurance_company }}</option>
+                    {% endfor %}
+                </select>
+                <label for='claim_issue'>Issue with Claim:</label>
+                <textarea class='form-control' id='claim_issue' name='claim_issue' required></textarea>
+            </div>
+        </form>
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li {% if message.tags %} class='{{ message.tags }}'{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</body>
+</html>

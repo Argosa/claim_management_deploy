@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>Login and Registration</title>
+</head>
+<body>
+    <div class='container bg-light'>
+        <div class='row bg-dark text-white'>
+            <h1 class='col'>Welcome {{ current_user.first_name }} {{ current_user.last_name }}</h1>
+            <div class="dropdown col">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Main Menu
+                </a>
+              
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="/patient/">Patient Registration</a>
+                  <a class="dropdown-item" href="/claim_dashboard/">Claims Dashboard</a>
+                  <a class="dropdown-item" href="/logout/">Logout</a>
+                </div>
+              </div>
+        </div>
+        <div class='row'>
+            <form class='col form-group' action='/process_patient' method='POST'>
+                {% csrf_token %}
+                <h4>Register Patient</h4>
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                    <li {% if message.tags %} class='{{ message.tags }}'{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <label class='mt-3' for='first_name'>First Name:</label>
+                <input class='form-control mt-2' type='text' id='first_name' name='first_name'>
+                <label class='mt-3' for='last_name'>Last Name</label>
+                <input class='form-control mt-2' type='text' id='last_name' name='last_name'>
+                <label class='mt-3' for='date_of_birth'>Date of Birth:</label>
+                <input class='form-control mt-2' type='date' id='date_of_birth' name='date_of_birth'>
+                <label class='mt-3' for='accout_number'>Account Number</label>
+                <input class="form-control mt-2" type='number' id='accout_number' name='account_number'>
+                <button class='btn btn-primary mt-3 ml-3' type='submit'>Register</button>
+            </form>
+            <div class='col'>
+
+            </div>
+        </div>
+        <div class='row'>
+                <h4>Patients</h4>
+                <table class='table-light table-striped w-100'>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Account #</th>
+                            <th>Action:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in all_patients %}
+                        <tr>
+                            <td>{{ patient.id }}</td>
+                            <td>{{ patient.first_name }}</td>
+                            <td>{{ patient.last_name }}</td>
+                            <td>{{ patient.account_number }}</td>
+                            <td><a href='/edit_patient/{{ patient.id }}'>View</a></td>
+                            <td>
+                                <form action='/go_edit' method='POST'>
+                                    {% csrf_token %}
+                                    <input type='hidden' name='patient_id' value='{{ patient.id }}'>
+                                    <button type='submit' class='btn btn-primary'>Edit</button>
+                                </form> 
+                            </td>
+                            <td>
+                                <form action='/create_claim' method='POST'>
+                                    {% csrf_token %}
+                                    <input type='hidden' name='user_id' value='{{ current_user.id }}'>
+                                    <input type='hidden' name='patient_id' value='{{ patient.id }}'>
+                                    <button class='btn btn-warning' type="submit">Create Claim</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+    </div>
+</body>
+</html>

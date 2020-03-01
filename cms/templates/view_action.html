@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>View Action</title>
+</head>
+<body>
+    <div class='container bg-light'>
+        <div class='row bg-dark text-white'>
+            <h1 class='col'>View Action {{ current_user.first_name }} {{ current_user.last_name }} <a href='/logout'>Logout</a></h1>
+            <div class="dropdown col">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Main Menu
+                </a>
+              
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="/patient/">Patient Registration</a>
+                  <a class="dropdown-item" href="/claim_dashboard/">Claims Dashboard</a>
+                  <a class="dropdown-item" href="/logout/">Logout</a>
+                </div>
+              </div>
+        </div>
+        <div class='card mt-4 mb-4'>
+            <div class='card-header'>
+                <div class=row>
+                    <h3 class='card-title col'><b>Patient:</b> {{ current_patient.first_name }} {{ current_patient.last_name }}</h3>
+                    <h3 class='card-title col'><b>Follow Up Date:</b> {{ current_action.follow_up_date }}</h3>
+                </div>
+                <div class='row'>
+                    <h3 class='card-title col'><b>Claim #:</b> {{ current_claim.claim_number }}</h3>
+                    <h3 class='card-title col'><b>Created On:</b> {{ current_claim.created_at }}</h3>
+                </div>
+                <div class='row'>
+                    <h3 class='card-title col'><b>Action Type:</b> {{ current_action.action.type }}</h3>
+                    <h3 class='card-title col'><b>Follow Up:</b> {{ current_action.follow_up }}</h3>
+                </div>
+            </div>
+            <div class='card-body'>
+                <h5><b>Claim Issue:</b></h5>
+                <p class='lead'></p>{{ current_claim.issue }}</p>
+                <h5><b>Action Note:</b></h5>
+                <p class='lead'>{{ current_action.note }}</p>
+            </div>
+            <div class='card-footer'>
+                <div class='row'>
+                    <div class='col-6'>
+                        <form class="form-group" action='\change_follow' method='POST'>
+                            {% csrf_token %}
+                            <input type='hidden' name='claim_id' value='{{ current_claim.id }}'>
+                            <input type='hidden' name='action_id' value='{{ current_action.id }}'>
+                            <button class='btn btn-primary' type='submit'>Add Follow Up Days</button>
+                            <input type="number" id='follow_up_days' name='follow_up_days'>
+                        </form>
+                    </div>
+                    <div class='col'>
+                        <form class="form-group" action='\close_action' method='POST'>
+                            {% csrf_token %}
+                            <input type='hidden' name='claim_id' value='{{ current_claim.id }}'>
+                            <input type='hidden' name='action_id' value='{{ current_action.id }}'>
+                            <button class='btn btn-warning' type='submit'>Close Action</button>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <form class="form-group" action='\close_claim' method='POST'>
+                            {% csrf_token %}
+                            <input type='hidden' name='claim_id' value='{{ current_claim.id }}'>
+                            <input type='hidden' name='action_id' value='{{ current_action.id }}'>
+                            <button class='btn btn-danger' type='submit'>Close Claim</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form class='form-group' action='/add_action_note' method='POST'>
+            {% csrf_token %}
+            <input type='hidden' name='action_id' value='{{ current_action.id }}'>
+            <textarea class='form-control' name='note'></textarea>
+            <button class="btn btn-dark m-4" type='submit'>Add to Note</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>View Patient</title>
+</head>
+<body>
+    <div class='container bg-light'>
+        <div class='row bg-dark text-white'>
+            <h1 class='col'>Welcome {{ current_user.first_name }} {{ current_user.last_name }}</h1>
+            <div class="dropdown col">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Main Menu
+                </a>
+              
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="/patient/">Patient Registration</a>
+                  <a class="dropdown-item" href="/claim_dashboard/">Claims Dashboard</a>
+                  <a class="dropdown-item" href="/logout/">Logout</a>
+                </div>
+              </div>
+        </div>
+        <div>
+            <h3>Patient: {{ current_patient.first_name }} {{ current_patient.last_name }}</h3>
+            <h4>Account #: {{ current_patient.account_number }}</h4>
+            <h4>Birth Date: {{ current_patient.birth_date }}</h4>
+            <h4>User: {{ current_patient.user.first_name}} {{ current_patient.user.last_name }}</h4>
+            <h4>Created At: {{ current_patient.created_at }}</h4>
+            <h4>Updated At: {{ current_patient.updated_at }}</h4>
+            {% if 'isAdmin' in request.session %}
+            <form action='/delete_patient' method="POST">
+                {% csrf_token %}
+                <input type='hidden' name='patient_id' value='{{ current_patient.id }}'>
+                <input type='hidden' name='patient_user_id' value='{{ current_patient.user.id }}>'>
+                <button type='submit' class='btn btn-danger mt-4 ml-4'>Delete</button>
+            </form>
+            {% endif %}
+            <form action='/go_edit' method="POST">
+                {% csrf_token %}
+                <input type='hidden' name='patient_id' value='{{ current_patient.id }}'>
+                <button class='btn btn-primary mt-4 ml-4' type='submit'>Edit</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

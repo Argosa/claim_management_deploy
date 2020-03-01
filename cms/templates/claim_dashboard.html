@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>Claim Dashboard</title>
+</head>
+<body>
+    <div class='container bg-light'>
+        <div class='row bg-dark text-white'>
+            <h1 class='col'>Welcome {{ current_user.first_name }} {{ current_user.last_name }}</h1>
+            <div class="dropdown col">
+                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Main Menu
+                </a>
+              
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <a class="dropdown-item" href="/patient/">Patient Registration</a>
+                  <a class="dropdown-item" href="/claim_dashboard/">Claims Dashboard</a>
+                  <a class="dropdown-item" href="/logout/">Logout</a>
+                </div>
+              </div>
+        </div>
+        <h5 class='mt-2'><b>Actions:</b></h5>
+        {% for claim in all_claims %}
+        <h5 class='mt-2 border-top'>Claim Number {{ claim.claim_number }} Patient: {{ claim.patient.first_name }} {{ claim.patient.last_name }}</h5> 
+            {% if claim.actions.count > 0 %}
+            <table class='table-striped table-dark w-100 mt-2'>
+                <thead>
+                    <tr>
+                        <th class='p-2'>ID</th>
+                        <th class='p-2'>Type</th>
+                        <th class='p-2'>Note</th>
+                        <th class='p-2'>Follow Up Date</th>
+                        <th class='p-2'>Actions</th>
+                    </tr>
+                </thead>
+                {% for action in claim.actions.all %}
+                <tbody>
+                    <tr>
+                        <td class='p-2'>{{ action.id }}</td>
+                        <td class='p-2'>{{ action.action.type }}</td>
+                        <td class='p-2'>{{ action.note }}</td>
+                        <td class='p-2'>{{ action.follow_up_date }}</td>
+                        <td class='p-2'>
+                            <form action='/go_view_action' method='POST'>
+                                {% csrf_token %}
+                                <input type='hidden' name='patient_id' value='{{ claim.patient.id }}'>
+                                <input type='hidden' name='claim_id' value='{{ claim.id }}'>
+                                <input type='hidden' name='action_id' value='{{ action.id }}'>
+                                <button class='btn btn-dark' type='submit'>View</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+            {% endif %}
+        {% endfor %}
+        <h5>Claims</h5>
+        <table class='table-light table-striped w-100'>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Claim Number</th>
+                    <th>DOS</th>
+                    <th>Patient</th>
+                    <th>Claim User</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for claim in all_claims %}
+                <tr>
+                    <td>{{ claim.id }}</td>
+                    <td>{{ claim.claim_number }}</td>
+                    <td>{{ claim.date_of_service }}</td>
+                    <td>{{ claim.patient.first_name }} {{ claim.patient.last_name }}</td>
+                    <td>{{ claim.user.first_name }} {{claim.user.last_name }}</td>
+                    <td><a class='btn btn-info' href='/view_claim/{{ claim.id }}'>View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
